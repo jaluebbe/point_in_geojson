@@ -1,0 +1,4 @@
+name: point_in_geojson
+dependencies:
+  - maturin
+ 
