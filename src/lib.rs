@@ -1,3 +1,4 @@
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use geojson::{GeoJson, Geometry, Value};
 use geo::{Point};
@@ -11,13 +12,12 @@ struct PointInGeoJSON {
 #[pymethods]
 impl PointInGeoJSON {
     #[new]
-    pub fn new(value: String) -> Self {
+    pub fn new(value: String) -> PyResult<Self> {
         let geojson_file = value.parse::<GeoJson>();
-        let geojson = match geojson_file {
-            Ok(data) => data,
-            Err(error) => panic!("Problem parsing GeoJSON data: {:?}", error),
-        };
-        PointInGeoJSON { geojson }
+        match geojson_file {
+            Ok(data) => Ok(PointInGeoJSON { geojson: data }),
+            Err(_error) => Err(PyValueError::new_err("Invalid GeoJSON string.")),
+        }
     }
 
     fn point_included(&self, lon: f64, lat: f64) -> PyResult<bool> {
