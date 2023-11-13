@@ -12,7 +12,11 @@ struct PointInGeoJSON {
 impl PointInGeoJSON {
     #[new]
     pub fn new(value: String) -> Self {
-        let geojson = value.parse::<GeoJson>().unwrap();
+        let geojson_file = value.parse::<GeoJson>();
+        let geojson = match geojson_file {
+            Ok(data) => data,
+            Err(error) => panic!("Problem parsing GeoJSON data: {:?}", error),
+        };
         PointInGeoJSON { geojson }
     }
 
