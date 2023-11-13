@@ -1,5 +1,4 @@
 import logging
-import json
 import point_in_geojson
 
 try:
@@ -34,8 +33,5 @@ with open("manuring_plan.json") as f:
 for _point in points:
     _lon, _lat = _point[:2]
     _properties = _point[3]
-    assert (
-        json.loads(pig.point_included_with_properties(_lon, _lat))
-        == _properties
-    )
+    assert pig.point_included_with_properties(_lon, _lat) == _properties
 print("-> Test of point_included_with_properties(lon, lat) passed.")

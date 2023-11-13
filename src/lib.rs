@@ -3,6 +3,7 @@ use pyo3::prelude::*;
 use geojson::{GeoJson, Geometry, Value};
 use geo::{Point};
 use geo::algorithm::contains::Contains;
+use pythonize::pythonize;
 
 #[pyclass]
 struct PointInGeoJSON {
@@ -44,7 +45,7 @@ impl PointInGeoJSON {
         Ok(false)
     }
 
-    fn point_included_with_properties(&self, lon: f64, lat: f64) -> PyResult<String> {
+    fn point_included_with_properties(&self, py:Python, lon: f64, lat: f64) -> PyResult<Py<PyAny>> {
         let point = Point::new(lon, lat);
         let mut vector: Vec<geojson::JsonObject> = Vec::new();
         match self.geojson {
@@ -70,8 +71,7 @@ impl PointInGeoJSON {
             },
             GeoJson::Geometry(_) => {},
         }
-        let json: String = serde_json::to_string(&vector).unwrap();
-        Ok(json)
+        Ok(pythonize(py, &vector).unwrap())
     }
 }
 
