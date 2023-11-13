@@ -3,6 +3,7 @@ use pyo3::prelude::*;
 use geojson::{GeoJson, Geometry, Value};
 use geo::{Point};
 use geo::algorithm::contains::Contains;
+use pythonize::pythonize;
 
 #[pyclass]
 struct PointInGeoJSON {
@@ -42,6 +43,35 @@ impl PointInGeoJSON {
             },
         }
         Ok(false)
+    }
+
+    fn point_included_with_properties(&self, py:Python, lon: f64, lat: f64) -> PyResult<Py<PyAny>> {
+        let point = Point::new(lon, lat);
+        let mut vector: Vec<geojson::JsonObject> = Vec::new();
+        match self.geojson {
+            GeoJson::FeatureCollection(ref ctn) => {
+                for feature in &ctn.features {
+                    if let Some(ref geom) = feature.geometry {
+                        if match_geometry(geom, point) {
+                            if let Some(properties) = &feature.properties {
+                                vector.push(properties.clone());
+                            }
+                        }
+                    }
+                }
+            },
+            GeoJson::Feature(ref feature) => {
+                if let Some(ref geom) = feature.geometry {
+                    if match_geometry(geom, point) {
+                        if let Some(properties) = &feature.properties {
+                            vector.push(properties.clone());
+                        }
+                    }
+                }
+            },
+            GeoJson::Geometry(_) => {},
+        }
+        Ok(pythonize(py, &vector).unwrap())
     }
 }
 
