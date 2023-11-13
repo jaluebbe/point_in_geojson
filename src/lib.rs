@@ -16,10 +16,9 @@ impl PointInGeoJSON {
         PointInGeoJSON { geojson }
     }
 
-    fn point_included<'py>(&self,
-        _py: Python<'py>, lon: f64, lat: f64) -> PyResult<bool> {
+    fn point_included(&self, lon: f64, lat: f64) -> PyResult<bool> {
             let point = Point::new(lon, lat);
-            match *(&self.geojson) {
+            match self.geojson {
                 GeoJson::FeatureCollection(ref ctn) => {
                     for feature in &ctn.features {
                         if let Some(ref geom) = feature.geometry {
@@ -41,12 +40,12 @@ impl PointInGeoJSON {
             Ok(false)
         }
 }
-/// Process GeoJSON geometries
+
 fn match_geometry(geom: &Geometry, point: Point) -> bool {
     match geom.value {
         Value::Polygon(_) | Value::MultiPolygon(_) => {
             let shape: geo_types::Geometry<f64> = geom.try_into().unwrap();
-            return shape.contains(&point)
+            shape.contains(&point)
     },
         Value::GeometryCollection(ref gc) => {
             for geometry in gc {
@@ -54,15 +53,14 @@ fn match_geometry(geom: &Geometry, point: Point) -> bool {
                     return true;
                 }
             }
-            return false;
+            false
         }
-        _ => return false,
+        _ => false
     }
 }
 
-
 #[pymodule]
 fn point_in_geojson(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
-        m.add_class::<PointInGeoJSON>()?;
+    m.add_class::<PointInGeoJSON>()?;
     Ok(())
 }
