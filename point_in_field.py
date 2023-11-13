@@ -1,4 +1,11 @@
+import logging
 import point_in_geojson
+
+try:
+    pig = point_in_geojson.PointInGeoJSON("{")
+    assert False
+except:
+    logging.exception("malformed JSON throws PanicException.")
 
 with open("field_boundaries.json") as f:
     pig = point_in_geojson.PointInGeoJSON(f.read())
