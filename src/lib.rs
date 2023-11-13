@@ -17,28 +17,28 @@ impl PointInGeoJSON {
     }
 
     fn point_included(&self, lon: f64, lat: f64) -> PyResult<bool> {
-            let point = Point::new(lon, lat);
-            match self.geojson {
-                GeoJson::FeatureCollection(ref ctn) => {
-                    for feature in &ctn.features {
-                        if let Some(ref geom) = feature.geometry {
-                            if match_geometry(geom, point) {
-                                return Ok(true);
-                            }
+        let point = Point::new(lon, lat);
+        match self.geojson {
+            GeoJson::FeatureCollection(ref ctn) => {
+                for feature in &ctn.features {
+                    if let Some(ref geom) = feature.geometry {
+                        if match_geometry(geom, point) {
+                            return Ok(true);
                         }
                     }
-                },
-                GeoJson::Feature(ref feature) => {
-                    if let Some(ref geom) = feature.geometry {
-                        return Ok(match_geometry(geom, point));
-                    }
-                },
-                GeoJson::Geometry(ref geom) => {
+                }
+            },
+            GeoJson::Feature(ref feature) => {
+                if let Some(ref geom) = feature.geometry {
                     return Ok(match_geometry(geom, point));
-                },
-            }
-            Ok(false)
+                }
+            },
+            GeoJson::Geometry(ref geom) => {
+                return Ok(match_geometry(geom, point));
+            },
         }
+        Ok(false)
+    }
 }
 
 fn match_geometry(geom: &Geometry, point: Point) -> bool {
@@ -46,7 +46,7 @@ fn match_geometry(geom: &Geometry, point: Point) -> bool {
         Value::Polygon(_) | Value::MultiPolygon(_) => {
             let shape: geo_types::Geometry<f64> = geom.try_into().unwrap();
             shape.contains(&point)
-    },
+        },
         Value::GeometryCollection(ref gc) => {
             for geometry in gc {
                 if match_geometry(geometry, point) {
