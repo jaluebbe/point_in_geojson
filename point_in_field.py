@@ -23,7 +23,7 @@ print("\n-> Demonstration of point_included(lon, lat)")
 with open("field_boundaries.json") as f:
     pig = point_in_geojson.PointInGeoJSON(f.read())
 for lon, lat in points:
-    print(f"Point: ({lon}, {lat}), Included: {pig.point_included(lon, lat)}")
+    print(f"Point: ({lon}, {lat}), included: {pig.point_included(lon, lat)}")
 
 print("\n-> Demonstration of point_included_with_properties(lon, lat)")
 with open("manuring_plan.json") as f:
@@ -31,5 +31,5 @@ with open("manuring_plan.json") as f:
 for lon, lat in points:
     print(
         f"Point: ({lon}, {lat}), "
-        f"Properties: {pig.point_included_with_properties(lon, lat)}"
+        f"properties: {pig.point_included_with_properties(lon, lat)}"
     )
