@@ -26,6 +26,7 @@ _area_ha = pig.area() / 1e4
 print(f"Area of shapes {_area_ha} ha")
 for lon, lat in points:
     print(f"Point: ({lon}, {lat}), included: {pig.point_included(lon, lat)}")
+    print(f"Closest distance: {pig.closest_distance(lon, lat):.1f} m")
 
 print("\n-> Demonstration of point_included_with_properties(lon, lat)")
 with open("manuring_plan.json") as f:
@@ -37,3 +38,4 @@ for lon, lat in points:
         f"Point: ({lon}, {lat}), "
         f"properties: {pig.point_included_with_properties(lon, lat)}"
     )
+    print(f"Closest distance: {pig.closest_distance(lon, lat):.1f} m")

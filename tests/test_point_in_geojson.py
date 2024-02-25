@@ -52,6 +52,20 @@ def test_area_calculation():
         area_ha = pig.area() / 1e4
         assert area_ha > 0
         assert area_ha == 8.4747
+    logging.info("Test of area() passed.")
+
+
+def test_closest_distance():
+    points = [
+        (7.9743145, 52.2893583, 0.0),
+        (7.973333, 52.286333, 210.5),
+    ]
+    with open("field_boundaries.json") as f:
+        pig = point_in_geojson.PointInGeoJSON(f.read())
+
+    for lon, lat, closest_distance in points:
+        assert round(pig.closest_distance(lon, lat), 1) == closest_distance
+    logging.info("Test of closest_distance(lon, lat) passed.")
 
 
 if __name__ == "__main__":
