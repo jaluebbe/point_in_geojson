@@ -84,7 +84,7 @@ impl PointInGeoJSON {
                 total_area += match_polygon_area(geom);
             }
         }
-        Ok(total_area)
+        Ok(total_area.round())
     }
 }
 

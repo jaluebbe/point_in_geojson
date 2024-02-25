@@ -51,7 +51,7 @@ def test_area_calculation():
         pig = point_in_geojson.PointInGeoJSON(f.read())
         area_ha = pig.area() / 1e4
         assert area_ha > 0
-        assert round(area_ha, 3) == 8.475
+        assert area_ha == 8.4747
 
 
 if __name__ == "__main__":
