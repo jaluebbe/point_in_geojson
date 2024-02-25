@@ -60,6 +60,8 @@ jobs:
           args: --release --out dist --find-interpreter
           sccache: 'true'
           manylinux: auto
+      - uses: uraimo/run-on-arch-action@v2.7.1
+        if: matrix.target != 'ppc64'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
