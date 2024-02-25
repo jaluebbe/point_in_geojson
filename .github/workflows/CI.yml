@@ -48,6 +48,7 @@ jobs:
     strategy:
       matrix:
         target: [aarch64, armv7, s390x, ppc64le, ppc64]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -57,11 +58,10 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --out dist 
+          #--find-interpreter
           sccache: 'true'
           manylinux: auto
-      - uses: uraimo/run-on-arch-action@v2.7.1
-        if: matrix.target != 'ppc64'
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
