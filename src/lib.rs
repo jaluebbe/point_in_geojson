@@ -80,7 +80,9 @@ impl PointInGeoJSON {
                     total_area += match_polygon_area(geom);
                 }
             },
-            GeoJson::Geometry(_) => {}
+            GeoJson::Geometry(geom) => {
+                total_area += match_polygon_area(geom);
+            }
         }
         Ok(total_area)
     }
