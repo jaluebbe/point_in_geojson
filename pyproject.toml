@@ -3,14 +3,25 @@ requires = ["maturin>=1.3,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "point_in_geojson"
+name = "point_in_geojson_jaluebbe"
+version = "0.0.1"
+authors = [
+  { name="Jannis Lübbe", email="jannisluebbe1982@gmail.com" },
+]
+description = "Checks how a point is related to a GeoJSON shape."
+readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "License :: OSI Approved :: MIT License",
 ]
 dynamic = ["version"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+
+[project.urls]
+Homepage = "https://github.com/jaluebbe/point_in_geojson"
+Issues = "https://github.com/jaluebbe/point_in_geojson/issues"
