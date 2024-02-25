@@ -46,6 +46,14 @@ def test_point_included_with_properties():
     logging.info("Test of point_included_with_properties(lon, lat) passed.")
 
 
+def test_area_calculation():
+    with open("field_boundaries.json") as f:
+        pig = point_in_geojson.PointInGeoJSON(f.read())
+        area_ha = pig.area() / 1e4
+        assert area_ha > 0
+        assert round(area_ha, 3) == 8.475
+
+
 if __name__ == "__main__":
     test_error_handling()
     test_point_included()
