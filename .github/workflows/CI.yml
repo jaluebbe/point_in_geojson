@@ -47,8 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [aarch64, armv7, s390x, ppc64le, ppc64]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        target: [aarch64, armv7]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -58,7 +57,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --find-interpreter -i python3.11
           sccache: 'true'
           manylinux: auto
       - name: Upload wheels
