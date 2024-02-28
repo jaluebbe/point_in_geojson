@@ -20,10 +20,11 @@ permissions:
 
 jobs:
   linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         target: [x86_64, i686, aarch64, armv7]
+        python-version: ['3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -34,7 +35,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter
+          args: --release --out dist -i python${{ matrix.python-version }}
           sccache: 'true'
           manylinux: auto
       - name: Upload wheels
