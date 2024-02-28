@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [aarch64, armv7]
+        target: [aarch64, armv7, armv6]
         python-version: ['3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
