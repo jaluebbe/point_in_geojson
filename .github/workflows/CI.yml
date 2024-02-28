@@ -44,10 +44,10 @@ jobs:
           path: dist
 
   linux-cross:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        target: [aarch64, armv7, armv6l]
+        target: [aarch64, armv7]
         python-version: ['3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v3
