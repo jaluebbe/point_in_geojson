@@ -68,7 +68,43 @@ def test_closest_distance():
     logging.info("Test of closest_distance(lon, lat) passed.")
 
 
-if __name__ == "__main__":
-    test_error_handling()
-    test_point_included()
-    test_point_included_with_properties()
+def test_distance_calculation():
+    points = [
+        ((7.9743145, 52.2893583, 7.973333, 52.286333), 343.2),
+        ((7.9743145, 52.2893583, 7.9743145, 52.2893583), 0.0),
+    ]
+    for coordinates, distance in points:
+        assert (
+            round(point_in_geojson.geodesic_distance(*coordinates), 1)
+            == distance
+        )
+    logging.info(
+        "Test of geodesic_distance(lon_1, lat_1, lon_2, lat_2) passed."
+    )
+
+
+def test_geodesic_bearing():
+    points = [
+        ((7.9743145, 52.2893583, 7.973333, 52.286333), -168.7),
+        ((7.9743145, 52.2893583, 7.9743145, 52.2893583), 180),
+    ]
+    for coordinates, bearing in points:
+        assert (
+            round(point_in_geojson.geodesic_bearing(*coordinates), 1) == bearing
+        )
+    logging.info("Test of geodesic_bearing(lon_1, lat_1, lon_2, lat_2) passed.")
+
+
+def test_geodesic_destination():
+    point_1 = (7.9743145, 52.2893583)
+    point_2 = (7.973333, 52.286333)
+    distance = point_in_geojson.geodesic_distance(*point_1, *point_2)
+    bearing = point_in_geojson.geodesic_bearing(*point_1, *point_2)
+    destination = point_in_geojson.geodesic_destination(
+        *point_1, bearing, distance
+    )
+    distance_check = point_in_geojson.geodesic_distance(*destination, *point_1)
+    assert distance_check < 1.0e9
+    logging.info(
+        "Test of geodesic_destination(lon_1, lat_1, bearing, distance) passed."
+    )

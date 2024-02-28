@@ -19,7 +19,10 @@ points = [
     (7.973333, 52.286333),
 ]
 
-print("\n-> Demonstration of point_included(lon, lat)")
+print(
+    "\n-> Demonstration of point_included(lon, lat), area() and "
+    "closest_distance(lon, lat) on field boundaries."
+)
 with open("field_boundaries.json") as f:
     pig = point_in_geojson.PointInGeoJSON(f.read())
 _area_ha = pig.area() / 1e4
@@ -28,7 +31,10 @@ for lon, lat in points:
     print(f"Point: ({lon}, {lat}), included: {pig.point_included(lon, lat)}")
     print(f"Closest distance: {pig.closest_distance(lon, lat):.1f} m")
 
-print("\n-> Demonstration of point_included_with_properties(lon, lat)")
+print(
+    "\n-> Demonstration of point_included_with_properties(lon, lat), "
+    "area() and closest_distance(lon, lat) on a manuring plan."
+)
 with open("manuring_plan.json") as f:
     pig = point_in_geojson.PointInGeoJSON(f.read())
 _area_ha = pig.area() / 1e4
@@ -39,3 +45,23 @@ for lon, lat in points:
         f"properties: {pig.point_included_with_properties(lon, lat)}"
     )
     print(f"Closest distance: {pig.closest_distance(lon, lat):.1f} m")
+
+print("\n-> Demonstration of geodesic_distance(lon_1, lat_1, lon_2, lat_2).")
+distance = point_in_geojson.geodesic_distance(*points[0], *points[1])
+print(f"Distance between the both points: {distance:.1f} m")
+
+print("\n-> Demonstration of geodesic_bearing(lon_1, lat_1, lon_2, lat_2).")
+bearing = point_in_geojson.geodesic_bearing(*points[0], *points[1])
+print(f"Bearing from the first to the second point: {bearing:.1f} deg")
+
+print(
+    "\n-> Demonstration of geodesic_destination(lon_1, lat_1, bearing, distance)."
+)
+destination = point_in_geojson.geodesic_destination(
+    *points[0], bearing, distance
+)
+print(f"The destination is located at: {destination}")
+distance_check = point_in_geojson.geodesic_distance(*destination, *points[1])
+print(
+    f"The distance to the second point is negligible with: {distance_check:.1} m."
+)
