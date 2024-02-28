@@ -5,6 +5,7 @@ use geo::{Point};
 use geo::algorithm::contains::Contains;
 use geo::algorithm::geodesic_area::GeodesicArea;
 use geo::algorithm::geodesic_distance::GeodesicDistance;
+use geo::algorithm::geodesic_destination::GeodesicDestination;
 use geo::algorithm::closest_point::ClosestPoint;
 use pythonize::pythonize;
 
@@ -161,8 +162,24 @@ fn match_geometry_distance(geom: &Geometry, point: Point<f64>) -> f64 {
     }
 }
 
+#[pyfunction]
+fn geodesic_distance(lon1: f64, lat1: f64, lon2: f64, lat2: f64) -> PyResult<f64> {
+    let point1 = Point::new(lon1, lat1);
+    let point2 = Point::new(lon2, lat2);
+    Ok(point1.geodesic_distance(&point2))
+}
+
+#[pyfunction]
+fn geodesic_destination(lon: f64, lat: f64, bearing: f64, distance: f64) -> PyResult<(f64, f64)> {
+    let point = Point::new(lon, lat);
+    let destination = point.geodesic_destination(bearing, distance);
+    Ok((destination.x(), destination.y()))
+}
+
 #[pymodule]
 fn point_in_geojson(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<PointInGeoJSON>()?;
+    m.add_function(wrap_pyfunction!(geodesic_distance, m)?)?;
+    m.add_function(wrap_pyfunction!(geodesic_destination, m)?)?;
     Ok(())
 }
