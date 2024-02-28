@@ -20,10 +20,10 @@ permissions:
 
 jobs:
   linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        target: [x86_64, i686]
+        target: [x86_64, i686, aarch64, armv7]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -44,7 +44,7 @@ jobs:
           path: dist
 
   linux-cross:
-    runs-on: messense/manylinux_2_28-cross
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         target: [aarch64, armv7]
