@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "point_in_geojson_jaluebbe"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
   { name="Jannis Lübbe", email="jannisluebbe1982@gmail.com" },
 ]

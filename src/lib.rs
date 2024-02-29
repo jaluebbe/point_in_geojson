@@ -111,6 +111,10 @@ impl PointInGeoJSON {
         }
         Ok(min_distance)
     }
+
+    fn to_dict(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        Ok(pythonize(py, &self.geojson).unwrap())
+    }
 }
 
 fn match_geometry_and_point(geom: &Geometry, point: Point) -> bool {

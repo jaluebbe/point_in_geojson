@@ -1,6 +1,7 @@
 import logging
-import point_in_geojson
+import json
 import pytest
+import point_in_geojson
 
 
 def test_error_handling():
@@ -108,3 +109,12 @@ def test_geodesic_destination():
     logging.info(
         "Test of geodesic_destination(lon_1, lat_1, bearing, distance) passed."
     )
+
+
+def test_to_dict():
+    with open("field_boundaries.json") as f:
+        boundaries_dict = json.load(f)
+    with open("field_boundaries.json") as f:
+        pig = point_in_geojson.PointInGeoJSON(f.read())
+    assert boundaries_dict == pig.to_dict()
+    logging.info("Test of to_dict() passed.")
