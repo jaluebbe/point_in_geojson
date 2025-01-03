@@ -1,10 +1,9 @@
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use geojson::{GeoJson, Geometry, Value};
-use geo::{Point};
+use geo::{Point, Distance};
 use geo::algorithm::contains::Contains;
 use geo::algorithm::geodesic_area::GeodesicArea;
-use geo::algorithm::geodesic_distance::GeodesicDistance;
 use geo::algorithm::geodesic_destination::GeodesicDestination;
 use geo::algorithm::geodesic_bearing::GeodesicBearing;
 use geo::algorithm::closest_point::ClosestPoint;
@@ -147,10 +146,10 @@ fn match_geometry_distance(geom: &Geometry, point: Point<f64>) -> f64 {
             let closest_result = shape.closest_point(&point);
             match &closest_result {
                 geo::Closest::Intersection(closest_point) => {
-                    point.geodesic_distance(&closest_point)
+                    point.distance(&closest_point)
                 },
                 geo::Closest::SinglePoint(closest_point) => {
-                    point.geodesic_distance(&closest_point)
+                    point.distance(&closest_point)
                 },
                 _ => {
                     f64::INFINITY
