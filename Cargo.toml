@@ -1,6 +1,6 @@
 [package]
 name = "point_in_geojson"
-version = "0.0.5"
+version = "0.0.6"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -10,8 +10,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 geojson = "0.24.1"
-geo = "0.28.0"
-geo-types = "0.7.13"
-serde_json = "1.0.114"
-pythonize = "0.20.0"
-pyo3 = "0.20.3"
+geo = "0.29.3"
+geo-types = "0.7.14"
+serde_json = "1.0.134"
+pythonize = "0.23.0"
+pyo3 = "0.23.3"
