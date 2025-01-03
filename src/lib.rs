@@ -1,12 +1,11 @@
-use pyo3::exceptions::PyValueError;
-use pyo3::prelude::*;
-use geojson::{GeoJson, Geometry, Value};
-use geo::{Point, Distance};
+
+use geo::{Bearing, Destination, Distance, Geodesic, Point};
+use geo::algorithm::closest_point::ClosestPoint;
 use geo::algorithm::contains::Contains;
 use geo::algorithm::geodesic_area::GeodesicArea;
-use geo::algorithm::geodesic_destination::GeodesicDestination;
-use geo::algorithm::geodesic_bearing::GeodesicBearing;
-use geo::algorithm::closest_point::ClosestPoint;
+use geojson::{GeoJson, Geometry, Value};
+use pyo3::exceptions::PyValueError;
+use pyo3::prelude::*;
 use pythonize::pythonize;
 
 #[pyclass]
@@ -65,7 +64,8 @@ impl PointInGeoJSON {
             },
             GeoJson::Geometry(_) => {},
         }
-        Ok(pythonize(py, &vector).unwrap())
+        let py_dict = pythonize(py, &self.geojson).unwrap();
+        Ok(py_dict.into())
     }
 
     fn area(&self) -> PyResult<f64> {
@@ -112,7 +112,8 @@ impl PointInGeoJSON {
     }
 
     fn to_dict(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        Ok(pythonize(py, &self.geojson).unwrap())
+        let py_dict = pythonize(py, &self.geojson).unwrap();
+        Ok(py_dict.into())
     }
 }
 
@@ -146,10 +147,10 @@ fn match_geometry_distance(geom: &Geometry, point: Point<f64>) -> f64 {
             let closest_result = shape.closest_point(&point);
             match &closest_result {
                 geo::Closest::Intersection(closest_point) => {
-                    point.distance(&closest_point)
+                    Geodesic::distance(point, *closest_point)
                 },
                 geo::Closest::SinglePoint(closest_point) => {
-                    point.distance(&closest_point)
+                    Geodesic::distance(point, *closest_point)
                 },
                 _ => {
                     f64::INFINITY
@@ -170,13 +171,13 @@ fn match_geometry_distance(geom: &Geometry, point: Point<f64>) -> f64 {
 fn geodesic_distance(lon1: f64, lat1: f64, lon2: f64, lat2: f64) -> PyResult<f64> {
     let point1 = Point::new(lon1, lat1);
     let point2 = Point::new(lon2, lat2);
-    Ok(point1.geodesic_distance(&point2))
+    Ok(Geodesic::distance(point1, point2))
 }
 
 #[pyfunction]
 fn geodesic_destination(lon: f64, lat: f64, bearing: f64, distance: f64) -> PyResult<(f64, f64)> {
     let point = Point::new(lon, lat);
-    let destination = point.geodesic_destination(bearing, distance);
+    let destination = Geodesic::destination(point, bearing, distance);
     Ok((destination.x(), destination.y()))
 }
 
@@ -184,11 +185,11 @@ fn geodesic_destination(lon: f64, lat: f64, bearing: f64, distance: f64) -> PyRe
 fn geodesic_bearing(lon1: f64, lat1: f64, lon2: f64, lat2: f64) -> PyResult<f64> {
     let point1 = Point::new(lon1, lat1);
     let point2 = Point::new(lon2, lat2);
-    Ok(point1.geodesic_bearing(point2))
+    Ok(Geodesic::bearing(point1, point2))
 }
 
 #[pymodule]
-fn point_in_geojson(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn point_in_geojson(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PointInGeoJSON>()?;
     m.add_function(wrap_pyfunction!(geodesic_distance, m)?)?;
     m.add_function(wrap_pyfunction!(geodesic_destination, m)?)?;
