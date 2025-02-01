@@ -7,4 +7,4 @@ For usage examples look into the tests folder or point_in_field.py .
 
 As compiling Rust on a Raspberry Pi may take a really long time, I provide some precompiled wheels on pypi.org.
 
-Just try ```pip install point-in-geojson-jaluebbe```
+Just try ```pip install point-in-geojson```
