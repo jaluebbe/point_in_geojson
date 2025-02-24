@@ -64,7 +64,7 @@ impl PointInGeoJSON {
             },
             GeoJson::Geometry(_) => {},
         }
-        let py_dict = pythonize(py, &self.geojson).unwrap();
+        let py_dict = pythonize(py, &vector).unwrap();
         Ok(py_dict.into())
     }
 
