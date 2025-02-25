@@ -94,9 +94,10 @@ impl PointInGeoJSON {
         Ok(py_dict.into())
     }
 
-    fn features_with_property_str(&self, py: Python<'_>, key: String, value: String) -> PyResult<Py<PyAny>> {
-        let value: serde_json::Value = value.into();
-        let vector = self.filter_features_by_property(&key, &value);
+    #[pyo3(signature = (key, value, match_type=None))]
+    fn features_with_property_str(&self, py: Python<'_>, key: String, value: String, match_type: Option<&str>) -> PyResult<Py<PyAny>> {
+        let match_type = match_type.unwrap_or("equal");
+        let vector = self.filter_features_by_property_str(&key, &value, match_type);
         let py_dict = pythonize(py, &vector).unwrap();
         Ok(py_dict.into())
     }
@@ -234,6 +235,44 @@ impl PointInGeoJSON {
                     if let Some(prop_value) = properties.get(key) {
                         if prop_value == value {
                             vector.push(feature.clone());
+                        }
+                    }
+                }
+            },
+            GeoJson::Geometry(_) => {},
+        }
+        vector
+    }
+
+    fn filter_features_by_property_str(&self, key: &str, value: &str, match_type: &str) -> Vec<geojson::Feature> {
+        let mut vector: Vec<geojson::Feature> = Vec::new();
+        match &self.geojson {
+            GeoJson::FeatureCollection(ctn) => {
+                for feature in &ctn.features {
+                    if let Some(properties) = &feature.properties {
+                        if let Some(prop_value) = properties.get(key) {
+                            if let Some(prop_str) = prop_value.as_str() {
+                                match match_type {
+                                    "equal" if prop_str == value => vector.push(feature.clone()),
+                                    "starts_with" if prop_str.starts_with(value) => vector.push(feature.clone()),
+                                    "contains" if prop_str.contains(value) => vector.push(feature.clone()),
+                                    _ => {}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            GeoJson::Feature(feature) => {
+                if let Some(properties) = &feature.properties {
+                    if let Some(prop_value) = properties.get(key) {
+                        if let Some(prop_str) = prop_value.as_str() {
+                            match match_type {
+                                "equal" if prop_str == value => vector.push(feature.clone()),
+                                "starts_with" if prop_str.starts_with(value) => vector.push(feature.clone()),
+                                "contains" if prop_str.contains(value) => vector.push(feature.clone()),
+                                _ => {}
+                            }
                         }
                     }
                 }
