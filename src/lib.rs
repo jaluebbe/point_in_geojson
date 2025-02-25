@@ -95,6 +95,12 @@ impl PointInGeoJSON {
     }
 
     fn features_with_property(&self, py: Python<'_>, key: String, value: String) -> PyResult<Py<PyAny>> {
+        let value: serde_json::Value = value.into();
+        let vector = self.filter_features_by_property(&key, &value);
+        let py_dict = pythonize(py, &vector).unwrap();
+        Ok(py_dict.into())
+    }
+/*    fn features_with_property(&self, py: Python<'_>, key: String, value: String) -> PyResult<Py<PyAny>> {
         let mut vector: Vec<geojson::Feature> = Vec::new();
         let value: serde_json::Value = value.into();
         match &self.geojson {
@@ -122,7 +128,7 @@ impl PointInGeoJSON {
         }
         let py_dict = pythonize(py, &vector).unwrap();
         Ok(py_dict.into())
-    }
+    }*/
 
     fn area(&self) -> PyResult<f64> {
         let mut total_area = 0.0;
@@ -220,6 +226,36 @@ fn match_geometry_distance(geom: &Geometry, point: Point<f64>) -> f64 {
             })
         },
         _ => f64::INFINITY
+    }
+}
+
+impl PointInGeoJSON {
+    fn filter_features_by_property(&self, key: &str, value: &serde_json::Value) -> Vec<geojson::Feature> {
+        let mut vector: Vec<geojson::Feature> = Vec::new();
+        match &self.geojson {
+            GeoJson::FeatureCollection(ctn) => {
+                for feature in &ctn.features {
+                    if let Some(properties) = &feature.properties {
+                        if let Some(prop_value) = properties.get(key) {
+                            if prop_value == value {
+                                vector.push(feature.clone());
+                            }
+                        }
+                    }
+                }
+            },
+            GeoJson::Feature(feature) => {
+                if let Some(properties) = &feature.properties {
+                    if let Some(prop_value) = properties.get(key) {
+                        if prop_value == value {
+                            vector.push(feature.clone());
+                        }
+                    }
+                }
+            },
+            GeoJson::Geometry(_) => {},
+        }
+        vector
     }
 }
 
