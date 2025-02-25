@@ -6,6 +6,8 @@ use geo::algorithm::geodesic_area::GeodesicArea;
 use geojson::{GeoJson, Geometry, Value};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use pyo3::types::PyAny;
+use std::borrow::Borrow;
 use pythonize::pythonize;
 
 #[pyclass]
@@ -114,6 +116,21 @@ impl PointInGeoJSON {
         let vector = self.filter_features_by_property(&key, &value);
         let py_dict = pythonize(py, &vector).unwrap();
         Ok(py_dict.into())
+    }
+    #[pyo3(signature = (key, value, match_type=None))]
+    fn features_with_property(&self, key: String, value: Py<PyAny>, match_type: Option<&str>) -> PyResult<Py<PyAny>> {
+        Python::with_gil(|py| {
+            let value = value.borrow();
+            if let Ok(value_str) = value.extract::<String>(py) {
+                return self.features_with_property_str(py, key, value_str, match_type);
+            } else if let Ok(value_int) = value.extract::<i64>(py) {
+                return self.features_with_property_int(py, key, value_int);
+            } else if let Ok(value_float) = value.extract::<f64>(py) {
+                return self.features_with_property_float(py, key, value_float);
+            } else {
+                Err(PyValueError::new_err("Unsupported value type"))
+            }
+        })
     }
 
     fn area(&self) -> PyResult<f64> {
