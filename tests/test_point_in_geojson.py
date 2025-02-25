@@ -52,7 +52,29 @@ def test_point_included_with_features():
         (
             7.9743145,
             52.2893583,
-            [{'type': 'Feature', 'geometry': {'type': 'Polygon', 'coordinates': [[[7.974057, 52.289182], [7.974049, 52.289361], [7.974342, 52.289366], [7.97435, 52.289187], [7.974057, 52.289182]]]}, 'properties': {'INDEX': 0.4275, 'RATE': 115, 'V22RATE': '0.92'}, 'id': '193'}],
+            [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [7.974057, 52.289182],
+                                [7.974049, 52.289361],
+                                [7.974342, 52.289366],
+                                [7.97435, 52.289187],
+                                [7.974057, 52.289182],
+                            ]
+                        ],
+                    },
+                    "properties": {
+                        "INDEX": 0.4275,
+                        "RATE": 115,
+                        "V22RATE": "0.92",
+                    },
+                    "id": "193",
+                }
+            ],
         ),
         (7.973333, 52.286333, []),
     ]
@@ -60,9 +82,23 @@ def test_point_included_with_features():
     with open("manuring_plan.json") as f:
         pig = point_in_geojson.PointInGeoJSON(f.read())
 
-    for lon, lat, properties in points:
-        assert pig.point_included_with_features(lon, lat) == properties
+    for lon, lat, features in points:
+        assert pig.point_included_with_features(lon, lat) == features
     logging.info("Test of point_included_with_features(lon, lat) passed.")
+
+
+def test_features_with_property():
+    points = [
+        ("V22RATE", "0.92", 7),
+        ("hello", "world", 0),
+    ]
+
+    with open("manuring_plan.json") as f:
+        pig = point_in_geojson.PointInGeoJSON(f.read())
+
+    for _key, _value, _length in points:
+        assert len(pig.features_with_property(_key, _value)) == _length
+    logging.info("Test of features_with_property(key, value) passed.")
 
 
 def test_area_calculation():

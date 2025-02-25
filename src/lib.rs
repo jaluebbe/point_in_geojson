@@ -94,6 +94,36 @@ impl PointInGeoJSON {
         Ok(py_dict.into())
     }
 
+    fn features_with_property(&self, py: Python<'_>, key: String, value: String) -> PyResult<Py<PyAny>> {
+        let mut vector: Vec<geojson::Feature> = Vec::new();
+        let value: serde_json::Value = value.into();
+        match &self.geojson {
+            GeoJson::FeatureCollection(ctn) => {
+                for feature in &ctn.features {
+                    if let Some(properties) = &feature.properties {
+                        if let Some(prop_value) = properties.get(&key) {
+                            if prop_value == &value {
+                                vector.push(feature.clone());
+                            }
+                        }
+                    }
+                }
+            },
+            GeoJson::Feature(feature) => {
+                if let Some(properties) = &feature.properties {
+                    if let Some(prop_value) = properties.get(&key) {
+                        if prop_value == &value {
+                            vector.push(feature.clone());
+                        }
+                    }
+                }
+            },
+            GeoJson::Geometry(_) => {},
+        }
+        let py_dict = pythonize(py, &vector).unwrap();
+        Ok(py_dict.into())
+    }
+
     fn area(&self) -> PyResult<f64> {
         let mut total_area = 0.0;
         match &self.geojson {
