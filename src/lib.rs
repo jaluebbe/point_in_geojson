@@ -256,6 +256,7 @@ impl PointInGeoJSON {
                                     "equal" if prop_str == value => vector.push(feature.clone()),
                                     "starts_with" if prop_str.starts_with(value) => vector.push(feature.clone()),
                                     "contains" if prop_str.contains(value) => vector.push(feature.clone()),
+                                    "ends_with" if prop_str.ends_with(value) => vector.push(feature.clone()),
                                     _ => {}
                                 }
                             }
@@ -271,6 +272,7 @@ impl PointInGeoJSON {
                                 "equal" if prop_str == value => vector.push(feature.clone()),
                                 "starts_with" if prop_str.starts_with(value) => vector.push(feature.clone()),
                                 "contains" if prop_str.contains(value) => vector.push(feature.clone()),
+                                "ends_with" if prop_str.ends_with(value) => vector.push(feature.clone()),
                                 _ => {}
                             }
                         }
