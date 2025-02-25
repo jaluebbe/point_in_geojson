@@ -68,6 +68,32 @@ impl PointInGeoJSON {
         Ok(py_dict.into())
     }
 
+    fn point_included_with_features(&self, py: Python<'_>, lon: f64, lat: f64) -> PyResult<Py<PyAny>> {
+        let point = Point::new(lon, lat);
+        let mut vector: Vec<geojson::Feature> = Vec::new();
+        match &self.geojson {
+            GeoJson::FeatureCollection(ctn) => {
+                for feature in &ctn.features {
+                    if let Some(ref geom) = feature.geometry {
+                        if match_geometry_and_point(geom, point) {
+                            vector.push(feature.clone());
+                        }
+                    }
+                }
+            },
+            GeoJson::Feature(feature) => {
+                if let Some(ref geom) = feature.geometry {
+                    if match_geometry_and_point(geom, point) {
+                        vector.push(feature.clone());
+                    }
+                }
+            },
+            GeoJson::Geometry(_) => {},
+        }
+        let py_dict = pythonize(py, &vector).unwrap();
+        Ok(py_dict.into())
+    }
+
     fn area(&self) -> PyResult<f64> {
         let mut total_area = 0.0;
         match &self.geojson {

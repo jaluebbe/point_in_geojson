@@ -46,6 +46,21 @@ for lon, lat in points:
     )
     print(f"Closest distance: {pig.closest_distance(lon, lat):.1f} m")
 
+print(
+    "\n-> Demonstration of point_included_with_features(lon, lat), "
+    "area() and closest_distance(lon, lat) on a manuring plan."
+)
+with open("manuring_plan.json") as f:
+    pig = point_in_geojson.PointInGeoJSON(f.read())
+_area_ha = pig.area() / 1e4
+print(f"Area of shapes {_area_ha} ha")
+for lon, lat in points:
+    print(
+        f"Point: ({lon}, {lat}), "
+        f"properties: {pig.point_included_with_features(lon, lat)}"
+    )
+    print(f"Closest distance: {pig.closest_distance(lon, lat):.1f} m")
+
 print("\n-> Demonstration of geodesic_distance(lon_1, lat_1, lon_2, lat_2).")
 distance = point_in_geojson.geodesic_distance(*points[0], *points[1])
 print(f"Distance between the both points: {distance:.1f} m")

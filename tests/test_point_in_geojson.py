@@ -47,6 +47,24 @@ def test_point_included_with_properties():
     logging.info("Test of point_included_with_properties(lon, lat) passed.")
 
 
+def test_point_included_with_features():
+    points = [
+        (
+            7.9743145,
+            52.2893583,
+            [{'type': 'Feature', 'geometry': {'type': 'Polygon', 'coordinates': [[[7.974057, 52.289182], [7.974049, 52.289361], [7.974342, 52.289366], [7.97435, 52.289187], [7.974057, 52.289182]]]}, 'properties': {'INDEX': 0.4275, 'RATE': 115, 'V22RATE': '0.92'}, 'id': '193'}],
+        ),
+        (7.973333, 52.286333, []),
+    ]
+
+    with open("manuring_plan.json") as f:
+        pig = point_in_geojson.PointInGeoJSON(f.read())
+
+    for lon, lat, properties in points:
+        assert pig.point_included_with_features(lon, lat) == properties
+    logging.info("Test of point_included_with_features(lon, lat) passed.")
+
+
 def test_area_calculation():
     with open("field_boundaries.json") as f:
         pig = point_in_geojson.PointInGeoJSON(f.read())
@@ -86,7 +104,7 @@ def test_distance_calculation():
 
 def test_geodesic_bearing():
     points = [
-        ((7.9743145, 52.2893583, 7.973333, 52.286333), -168.7),
+        ((7.9743145, 52.2893583, 7.973333, 52.286333), 191.3),
         ((7.9743145, 52.2893583, 7.9743145, 52.2893583), 180),
     ]
     for coordinates, bearing in points:
